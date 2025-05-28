@@ -27,6 +27,6 @@ int main(){
     // Esperamos un segundo
     sleep(1);
 
-    // Finalizamos el programa
+    // Finalizamos el proceso
     return 0;
 }
