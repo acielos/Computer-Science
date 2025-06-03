@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 // Creamos la variable y la función para la señal del proceso A (señal 10)
 int permitA = 0;
@@ -23,7 +24,7 @@ int main(){
     printf("    Segundo mensaje\n");
 
     // Envíamos la señal al proceso A
-    kill(getppid(), 10);
+    kill(getppid(), 10);        // Señal nº2
 
     // Esperamos a la señal del proceso A
     if (permitA == 0)

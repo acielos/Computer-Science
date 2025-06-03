@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 // Creamos la variable y la función para la señal del proceso A (señal 12)
 int permitA = 0;
@@ -15,7 +16,7 @@ void setPermitAla(){ permitAla = 1; }
 int main(){
 
     // Escuchamos la señal del proceso A
-    signal(10, setPermitA);
+    signal(12, setPermitA);
 
     // Escuchamos la señal de la alarma
     signal(14, setPermitAla);
@@ -31,7 +32,7 @@ int main(){
     printf("        Tercer mensaje\n");
 
     // Establecemos una alarma de 3 segundos
-    alarm(3);
+    alarm(3);       // Señal nº4
 
     // Esperamos la señal de la alarma...
     while (!permitAla)
@@ -44,7 +45,7 @@ int main(){
     printf("        Cuarto mensaje\n");
 
     // Envíamos señal al proceso A
-    kill(getppid(), 12);
+    kill(getppid(), 12);        // Señal nº5
 
     // Finalizamos el proceso C
     return 0;
