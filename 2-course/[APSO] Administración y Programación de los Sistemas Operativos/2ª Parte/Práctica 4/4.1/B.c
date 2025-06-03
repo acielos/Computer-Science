@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
 
 // Creamos la variable y la función para la señal del proceso A (señal 10)
 int permitA = 0;

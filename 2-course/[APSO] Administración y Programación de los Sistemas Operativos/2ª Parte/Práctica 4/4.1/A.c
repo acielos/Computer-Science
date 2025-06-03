@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
 
 /*
     Para el desarrollo de esta práctica, incluiremos un concepto nuevo, las "signals"
