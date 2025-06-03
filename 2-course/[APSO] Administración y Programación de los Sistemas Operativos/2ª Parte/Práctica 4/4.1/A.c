@@ -1,5 +1,14 @@
 #include <stdio.h>
 
+/*
+    Para el desarrollo de esta práctica, incluiremos un concepto nuevo, las "signals"
+    Estas señales las usaremos para la comunicación entre procesos, de manera que un proceso
+    hijo pueda comunicar al proceso padre que ha realizado una acción, de manera que
+    el padre pueda seguir realizando otro tipo de acciones.
+
+    De la misma manera, podrán comunicarse procesos que no sean padre-hijo.
+ */
+
 int main(){
     // Variables para guardar el PID de los procesos B y C
     int pidB, pidC;
