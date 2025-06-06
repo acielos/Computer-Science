@@ -36,7 +36,7 @@ int main(){
         execl("B", "B", NULL);
         perror("Error en el EXECL del proceso B\n");
         exit(-1);
-    }else
+    }else if (pidB == -1)
     {
         perror("Error en el FORK del proceso B\n");
     }
@@ -48,9 +48,9 @@ int main(){
         execl("C", "C", NULL);
         perror("Error en el EXECL del proceso C\n");
         exit(-1);
-    }else
+    }else if (pidC == -1)
     {
-        perror("Error en el FORK del proceso C\n");
+        perror("Error en el FORK del proceso B\n");
     }
 
     // Esperamos un segundo
@@ -59,9 +59,18 @@ int main(){
     // Mostramos el primer mensaje
     printf("Primer mensaje\n");
 
+    // Escribimos en la PIPE el PID del proceso C
+    write(PIPE[1], &pidC, sizeof(pidC));
+
+    // Esperamos a que terminen los procesos B y C
+    wait(NULL);
+    wait(NULL);
+
     // Mostramos el último mensaje
     printf("Último mensaje\n");
 
+    // Cerramos la fifo
+    unlink("fifoBC");
     // Finalizamos el proceso A
     return 0;
 }
