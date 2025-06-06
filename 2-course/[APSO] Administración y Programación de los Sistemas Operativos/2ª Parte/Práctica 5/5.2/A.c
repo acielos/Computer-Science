@@ -31,7 +31,7 @@ int main(){
     pidB = fork();
     if (pidB == 0)
     {
-        close(0);
+        close(2);
         dup(PIPE[1]);
         execl("B", "B", NULL);
         perror("Error en el EXECL del proceso B\n");
@@ -48,13 +48,19 @@ int main(){
     // Abrimos la FIFO para leer
     int fifoAC = open("FIFOAC", O_RDONLY);
 
+    // Damos forma a lo mostrado por pantalla
+    printf("\n");
+    printf("Recibiendo números...\n");
+
     // Leemos los números dados por los procesos B y C
     for (int i = 0; i < 5; i++)
     {
-        read(PIPE[0], &listaB[i], sizeof(listaB));
+        read(PIPE[0], &listaB[i], sizeof(int));
         printf("Número %d, mandado por el proceso B\n", listaB[i]);
-        read(fifoAC, &listaC[i], sizeof(listaC));
+        read(fifoAC, &listaC[i], sizeof(int));
         printf("Número %d, mandado por el proceso C\n", listaC[i]);
+        printf("\n");
+        sleep(1);
     }
 
     // Declaramos variables para guardar las medias
@@ -71,13 +77,23 @@ int main(){
     mediaB /= 5;
     mediaC /= 5;
 
+    // Mostramos la media por pantalla
+    printf("Media de los números enviados por B: %d\n", mediaB);
+    printf("Media de los números enviados por C: %d\n", mediaC);
+    printf("\n");
+
     // Comparamos cuál es mayor y lo comunicamos a B
     if (mediaB > mediaC)
     {
         kill(pidB, 10);
-    }else
+    }else if (mediaB < mediaC)
     {
         kill(pidB, 12);
+    }else if ( mediaB == mediaC)
+    {
+        printf("La media de ambos procesos es IGUAL\n");
+        printf("\n");
+        kill(pidB, 15);
     }
 
     // Esperamos a que finalice el proceso B
@@ -85,6 +101,9 @@ int main(){
 
     // Mensaje de finalización
     printf("Proceso A finalizado...\n");
+
+    // Cerramos la FIFO
+    unlink("FIFOAC");
 
     // Finalizamos el proceso A
     return 0;

@@ -8,15 +8,17 @@
 #include <signal.h>
 
 // Variable y funciones para esperar señal de resultado
-resultado = 0;
-void setWinner(){ resultado = 1; }
-void setLoser(){ resultado = 2; }
+int resultado = 0;
+void setWinner(){ resultado = 10; }
+void setLoser(){ resultado = 12; }
+void setFinal(){ resultado = 15; }
 
 int main(){
 
     // Escuchamos las señales...
     signal(10, setWinner);
     signal(12, setLoser);
+    signal(15, setFinal);
 
     // Variable para guardar el PID del proceso C
     int pidC;
@@ -56,13 +58,16 @@ int main(){
         pause();
     }
 
-    if (resultado == 1)
-    {
-        kill(pidC, 10);
-        printf("    Proceso B Ganador!\n");
-    }else if (resultado == 2)
+    if (resultado == 10)
     {
         kill(pidC, 12);
+    }else if (resultado == 12)
+    {
+        kill(pidC, 10);
+    }else if (resultado == 15)
+    {
+        printf(" ");
+        kill(pidC, 15);
     }
 
     // Esperamos a que C termine...
