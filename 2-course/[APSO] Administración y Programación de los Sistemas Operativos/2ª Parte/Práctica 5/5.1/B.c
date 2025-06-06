@@ -6,10 +6,6 @@
 #include <fcntl.h>
 #include <signal.h>
 
-// Variable y función para esperar permiso del proceso A
-int permisionA = 0;
-void setPermisionA(){ permisionA = 1; }
-
 // Variable y función para esperar permiso del proceso C
 int permisionC = 0;
 void setPermisionC(){ permisionC = 1; }
@@ -18,7 +14,6 @@ int main(){
 
     // Escuchamos las señales...
     signal(12, setPermisionC);
-    signal(10, setPermisionA);
 
     // Variables para guardar los PIDs de los procesos B y C
     int pidB, pidC;
