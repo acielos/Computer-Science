@@ -6,6 +6,10 @@
 #include <fcntl.h>
 #include <signal.h>
 
+// Variable y función para esperar permiso del proceso A
+int permisionA = 0;
+void setPermisionA(){ permisionA = 1; }
+
 // Variable y función para esperar permiso del proceso C
 int permisionC = 0;
 void setPermisionC(){ permisionC = 1; }
@@ -14,6 +18,7 @@ int main(){
 
     // Escuchamos las señales...
     signal(12, setPermisionC);
+    signal(10, setPermisionA);
 
     // Variables para guardar los PIDs de los procesos B y C
     int pidB, pidC;
@@ -24,17 +29,21 @@ int main(){
     // Leemos el PID del proceso C
     read(pipeAB, &pidC, sizeof(pidC));
 
+    // Mostramos el segundo mensaje
+    printf("    Segundo Mensaje\n");
+
     // Abrimos la FIFO para comunicar los procesos B y C
     int fifoBC = open("fifoBC", O_RDWR);
 
-    // Mostramos el segundo mensaje
-    printf("    Segundo Mensaje\n");
+    // Escribimos en la FIFO el PID del proceso B
+    pidB = getpid();
+    write(fifoBC, &pidB, sizeof(pidB));
 
     // Avisamos al proceso C de que puede continuar
     kill(pidC, 12);
 
     // Esperamos a que el proceso C nos de permiso
-    if (permisionC == 0)
+    while (permisionC == 0)
     {
         pause();
     }

@@ -56,11 +56,11 @@ int main(){
     // Esperamos un segundo
     sleep(1);
 
-    // Mostramos el primer mensaje
-    printf("Primer mensaje\n");
-
     // Escribimos en la PIPE el PID del proceso C
     write(PIPE[1], &pidC, sizeof(pidC));
+
+    // Mostramos el primer mensaje
+    printf("Primer mensaje\n");
 
     // Esperamos a que terminen los procesos B y C
     wait(NULL);

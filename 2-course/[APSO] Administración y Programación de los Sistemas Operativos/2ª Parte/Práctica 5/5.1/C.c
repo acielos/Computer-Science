@@ -23,9 +23,8 @@ int main(){
     // Variables para guardar el PID del proceso B
     int pidB;
 
-
     // Esperamos a que el proceso B nos de permiso
-    if (permisionB == 0)
+    while (permisionB == 0)
     {
         pause();
     }
@@ -33,6 +32,9 @@ int main(){
 
     // Mostramos el tercer mensaje
     printf("        Tercer Mensaje\n");
+
+    // Establecemos alarma de 3 segundos
+    alarm(3);
 
     // Esperamos fin de la alarma
     while (!permisionAl)
