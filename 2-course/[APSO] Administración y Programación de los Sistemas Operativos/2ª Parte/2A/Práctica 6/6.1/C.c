@@ -57,6 +57,6 @@ int main(){
         msgsnd(idCola, (struct msgbug*)&mensajeC, sizeof(mensajeC) - sizeof(long), 2);
     }
 
-    // Finalizamos el proceso B
+    // Finalizamos el proceso C
     return 0;
 }
