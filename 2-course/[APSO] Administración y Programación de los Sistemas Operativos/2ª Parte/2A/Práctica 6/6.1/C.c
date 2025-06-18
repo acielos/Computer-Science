@@ -47,7 +47,7 @@ int main(){
     // Generamos los números aleatorios y los escribimos en la cola
     for(int i = 0; i < 10; i++)
     {
-        nAle = rand() % 100 + 1;            // Generamos número aleatorio entre 1 y 100
+        nAle = (rand() % 100 + 1) * (-1);            // Generamos número aleatorio entre 1 y 100
         tAle = rand() % 3 + 1;              // Generamos número aleatorio entre 1 y 3 para la pausa
         mensajeC.tipo = 2;                  // Declaramos que este dato viene del proceso C
         mensajeC.dato = nAle;
