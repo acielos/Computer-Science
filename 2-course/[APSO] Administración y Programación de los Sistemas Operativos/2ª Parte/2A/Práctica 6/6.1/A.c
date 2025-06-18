@@ -73,8 +73,13 @@ int main(){
     int contador = 0;
     while (contador < 10)
     {
+        // Comprobación del nº de mensajes mostrados por pantalla
+        printf("Mensaje nº %d\n\n", contador);
+        
         // Mensajes de la cola del proceso B
         colaB = msgrcv(idCola, (struct msgbug *)&mensajeB, sizeof(mensajeB) - sizeof(long), 1, 0);
+
+        // Comprobamos que no haya errores en la lectura de mensajes 
         if (colaB == -1)
         {
             perror("No se pueden recibir mensajes de la cola de mensajes\n");
@@ -84,13 +89,14 @@ int main(){
 
         // Mensajes de la cola del proceso C
         colaC = msgrcv(idCola, (struct msgbug *)&mensajeC, sizeof(mensajeC) - sizeof(long), 1, 0);
+
+        // Comprobamos que no haya errores en la lectura de mensajes 
         if (colaC == -1)
         {
             perror("No se pueden recibir mensajes de la cola de mensajes\n");
         }
         
         printf("Proceso C: %d\n", mensajeC.dato);
-        
     }
 
     // Eliminamos la cola de mensajes // mostramos mensaje de error
