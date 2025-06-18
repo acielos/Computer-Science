@@ -30,7 +30,7 @@ int main(){
     struct Cola mensajeB, mensajeC;
 
     // Obtenemos la clave de la cola de mensajes
-    clave = ftok("makefile", 33);
+    clave = ftok("makefile", 12);
     if (clave == (key_t)-1)
     {
         perror("Error al obtener la clave de la cola de mensajes\n");
@@ -87,7 +87,7 @@ int main(){
         printf("Proceso B: %d\n", mensajeB.dato);
 
         // Mensajes de la cola del proceso C
-        colaC = msgrcv(idCola, (struct msgbug *)&mensajeC, sizeof(mensajeC) - sizeof(long), 1, 0);
+        colaC = msgrcv(idCola, (struct msgbug *)&mensajeC, sizeof(mensajeC) - sizeof(long), 2, 0);
 
         // Comprobamos que no haya errores en la lectura de mensajes 
         if (colaC == -1)

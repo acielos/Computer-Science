@@ -27,7 +27,7 @@ int main(){
     srand(getpid());
 
     // Obtenemos la clave de la cola de mensajes
-    clave = ftok("makefile", 33);
+    clave = ftok("makefile", 12);
 
     // Comprobamos que la clave sea correcta
     if (clave == (key_t)-1)
@@ -45,9 +45,7 @@ int main(){
     }
 
     // Generamos los números aleatorios y los escribimos en la cola
-
-    int contador = 0;
-    while (contador < 10)
+    for (int i = 0; i < 10; i++)
     {
         nAle = rand() % 100 + 1;        // Generamos número aleatorio entre 1 y 100
         tAle = rand() % 3 + 1;          // Generamos número aleatorio entre 1 y 3 para la pausa

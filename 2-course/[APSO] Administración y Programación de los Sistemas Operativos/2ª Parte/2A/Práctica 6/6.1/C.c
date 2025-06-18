@@ -27,7 +27,7 @@ int main(){
     srand(getpid());
 
     // Obtenemos la clave de la cola de mensajes
-    clave = ftok("makefile", 33);
+    clave = ftok("makefile", 12);
 
     // Comprobamos que la clave sea correcta
     if (clave == (key_t)-1)
