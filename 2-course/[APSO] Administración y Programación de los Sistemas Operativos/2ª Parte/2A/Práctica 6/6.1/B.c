@@ -27,7 +27,7 @@ int main(){
     srand(getpid());
 
     // Obtenemos la clave de la cola de mensajes
-    clave = ftok("./makefile", 33);
+    clave = ftok("makefile", 33);
 
     // Comprobamos que la clave sea correcta
     if (clave == (key_t)-1)
@@ -37,7 +37,7 @@ int main(){
     }
 
     // Abrimos la cola de mensajes y obtenemos su identificador
-    idCola = msgget(clave, 0777 | IPC_CREAT);
+    idCola = msgget(clave, 0600 | IPC_CREAT);
     if (idCola == -1)
     {
         perror("    Error al obtener el identificador de la cola de mensajes\n");
@@ -55,14 +55,8 @@ int main(){
         mensajeB.dato = nAle;
         sleep(tAle);                    // Pausa de tiempo aleatorio
 
-        // Comprobamos que no haya errores en la escritura en la cola
-        if (msgsnd(idCola, (struct msgbug *)&mensajeB, sizeof(mensajeB) - sizeof(long), IPC_NOWAIT) == -1)
-        {
-            perror("    Proceso B: No se puede enviar mensajes a la cola de mensajes\n");
-        }
-
-        // Sumamos el contador
-        contador++;
+        // Escribimos los números en la cola
+        msgsnd(idCola, (struct msgbug*)&mensajeB, sizeof(mensajeB) - sizeof(long), 1);
     }
 
     // Finalizamos el proceso B

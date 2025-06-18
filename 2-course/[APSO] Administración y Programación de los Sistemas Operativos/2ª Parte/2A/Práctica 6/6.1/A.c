@@ -30,7 +30,7 @@ int main(){
     struct Cola mensajeB, mensajeC;
 
     // Obtenemos la clave de la cola de mensajes
-    clave = ftok("./makefile", 33);
+    clave = ftok("makefile", 33);
     if (clave == (key_t)-1)
     {
         perror("Error al obtener la clave de la cola de mensajes\n");
@@ -38,7 +38,7 @@ int main(){
     }
 
     // Abrimos la cola de mensajes
-    idCola = msgget(clave, 0666 | IPC_CREAT);
+    idCola = msgget(clave, 0600 | IPC_CREAT);
     if (idCola == -1)
     {
         perror("Error al obtener el identificador de la cola de mensajes\n");
@@ -70,11 +70,10 @@ int main(){
     }
 
     // Mostramos los números de las colas por pantalla
-    int contador = 0;
-    while (contador < 10)
+    for(int i = 0; i < 10; i++)
     {
         // Comprobación del nº de mensajes mostrados por pantalla
-        printf("Mensaje nº %d\n\n", contador);
+        printf("\nMensaje nº %d\n", i);
         
         // Mensajes de la cola del proceso B
         colaB = msgrcv(idCola, (struct msgbug *)&mensajeB, sizeof(mensajeB) - sizeof(long), 1, 0);

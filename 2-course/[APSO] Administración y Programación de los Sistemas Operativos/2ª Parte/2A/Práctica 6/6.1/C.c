@@ -21,13 +21,13 @@ int main(){
     key_t clave;
 
     // Declaramos la cola para añadir mensajes
-    struct Cola mensajeB;
+    struct Cola mensajeC;
 
     // Creamos la semilla para generar números aleatorios
     srand(getpid());
 
     // Obtenemos la clave de la cola de mensajes
-    clave = ftok("./makefile", 33);
+    clave = ftok("makefile", 33);
 
     // Comprobamos que la clave sea correcta
     if (clave == (key_t)-1)
@@ -37,7 +37,7 @@ int main(){
     }
 
     // Abrimos la cola de mensajes y obtenemos su identificador
-    idCola = msgget(clave, 0777 | IPC_CREAT);
+    idCola = msgget(clave, 0600 | IPC_CREAT);
     if (idCola == -1)
     {
         perror("    Error al obtener el identificador de la cola de mensajes\n");
@@ -45,24 +45,16 @@ int main(){
     }
 
     // Generamos los números aleatorios y los escribimos en la cola
-
-    int contador = 0;
-    while (contador < 10)
+    for(int i = 0; i < 10; i++)
     {
         nAle = rand() % 100 + 1;            // Generamos número aleatorio entre 1 y 100
         tAle = rand() % 3 + 1;              // Generamos número aleatorio entre 1 y 3 para la pausa
-        mensajeB.tipo = 2;                  // Declaramos que este dato viene del proceso C
-        mensajeB.dato = nAle;
+        mensajeC.tipo = 2;                  // Declaramos que este dato viene del proceso C
+        mensajeC.dato = nAle;
         sleep(tAle);                        // Pausa de tiempo aleatorio
 
-        // Comprobamos que no haya errores en la escritura en la cola
-        if (msgsnd(idCola, (struct msgbug *)&mensajeB, sizeof(mensajeB) - sizeof(long), IPC_NOWAIT) == -1)
-        {
-            perror("    Proceso B: No se puede enviar mensajes a la cola de mensajes\n");
-        }
-
-        // Sumamos el contador
-        contador++;
+        // Escribimos los números en la cola
+        msgsnd(idCola, (struct msgbug*)&mensajeC, sizeof(mensajeC) - sizeof(long), 2);
     }
 
     // Finalizamos el proceso B
