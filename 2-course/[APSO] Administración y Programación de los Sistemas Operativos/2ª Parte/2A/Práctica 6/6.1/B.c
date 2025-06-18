@@ -37,7 +37,7 @@ int main(){
     }
 
     // Abrimos la cola de mensajes y obtenemos su identificador
-    idCola = msgget(clave, 0666 | IPC_CREAT);
+    idCola = msgget(clave, 0777 | IPC_CREAT);
     if (idCola == -1)
     {
         perror("    Error al obtener el identificador de la cola de mensajes\n");

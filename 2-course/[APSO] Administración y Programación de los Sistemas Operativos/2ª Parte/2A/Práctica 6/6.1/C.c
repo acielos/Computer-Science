@@ -37,7 +37,7 @@ int main(){
     }
 
     // Abrimos la cola de mensajes y obtenemos su identificador
-    idCola = msgget(clave, 0666 | IPC_CREAT);
+    idCola = msgget(clave, 0777 | IPC_CREAT);
     if (idCola == -1)
     {
         perror("    Error al obtener el identificador de la cola de mensajes\n");
@@ -49,8 +49,7 @@ int main(){
     int contador = 0;
     while (contador < 10)
     {
-        nAle = rand() % 100 + 1;          // Generamos número aleatorio entre 1 y 100
-        //nAle = nAle * (-1);
+        nAle = rand() % 100 + 1;            // Generamos número aleatorio entre 1 y 100
         tAle = rand() % 3 + 1;              // Generamos número aleatorio entre 1 y 3 para la pausa
         mensajeB.tipo = 2;                  // Declaramos que este dato viene del proceso C
         mensajeB.dato = nAle;
