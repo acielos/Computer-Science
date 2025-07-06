@@ -57,7 +57,7 @@ int main(){
     for (int i = 1; i <= 5; i++)
     {
         // Leemos cada dos segundos...
-        sleep(2);
+        sleep(4);
 
         // Tratamos de leer de la cola de mensajes de A, si no… Error
         if (msgrcv(idCola, (struct msgbuf *)&mensaje, sizeof(mensaje) - sizeof(long), (long)i, IPC_NOWAIT) != -1)

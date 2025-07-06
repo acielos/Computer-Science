@@ -73,6 +73,7 @@ int main(){
     {
         // Damos forma...
         printf("Nº de Generación... %d\n", contador + 1);
+        
         /*
         Leemos de la cola de mensajes (B)
             colaVaciaB: Donde guardaremos los datos leidos de la cola
