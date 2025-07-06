@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/msg.h>
 #include <sys/types.h>
-#include <unistd.h>
 
-// Primero crearemos la estructura que usaremos para la cola
-struct Cola
+// Creamos la estructura para la cola
+struct Mensaje
 {
     long tipo;
     int dato;
@@ -13,50 +13,53 @@ struct Cola
 
 int main(){
 
-    // Declaramos las variables para el tiempo aleatorio, numero aleatorio y 
-    // para guardar el ID de la cola de mensajes
+    // Declaramos las variables que usaremos
     int nAle, tAle, idCola;
 
-    // Declaramos el identificador de la cola
-    key_t clave;
-
-    // Declaramos la cola para añadir mensajes
-    struct Cola mensajeC;
-
-    // Creamos la semilla para generar números aleatorios
+    // Preparamos para generar numeros aleatorios
     srand(getpid());
 
-    // Obtenemos la clave de la cola de mensajes
-    clave = ftok("makefile", 12);
+    // Declaramos la variable para la clave de la cola
+    key_t clave;
 
-    // Comprobamos que la clave sea correcta
+    // Declaramos la variable (tipo Mensaje) para enviar por la cola
+    struct Mensaje mensaje;
+
+    // Generamos la clave de la cola
+    clave = ftok("./makefile", 33);
+
+    // Comprobamos que la clave se haya generado correctamente
     if (clave == (key_t)-1)
     {
-        perror("    Error al obtener la clave de la cola de mensajes\n");
+        perror("    FAIL: Error al obtener la clave de la cola de mensajes (C)...\n");
         exit(-1);
     }
 
-    // Abrimos la cola de mensajes y obtenemos su identificador
+    // Obtenemos el ID de la cola (creamos o abrimos)
     idCola = msgget(clave, 0600 | IPC_CREAT);
+
+    // Comprobamos que el ID sea válido
     if (idCola == -1)
     {
-        perror("    Error al obtener el identificador de la cola de mensajes\n");
+        perror("    FAIL: Error al obtener el identificador de la cola de mensajes...\n");
         exit(-1);
     }
 
-    // Generamos los números aleatorios y los escribimos en la cola
-    for(int i = 0; i < 10; i++)
+    // Vamos a enviar mensajes por la cola...
+    for (int i = 0; i < 10; i++)
     {
-        nAle = (rand() % 100 + 1) * (-1);            // Generamos número aleatorio entre 1 y 100
-        tAle = rand() % 3 + 1;              // Generamos número aleatorio entre 1 y 3 para la pausa
-        mensajeC.tipo = 2;                  // Declaramos que este dato viene del proceso C
-        mensajeC.dato = nAle;
-        sleep(tAle);                        // Pausa de tiempo aleatorio
+        nAle = (rand() % 100 + 1) * (-1);
+        tAle = rand() % 3 + 1;
+        mensaje.tipo = 2;
+        mensaje.dato = nAle;
+        sleep(tAle);
 
-        // Escribimos los números en la cola
-        msgsnd(idCola, (struct msgbug*)&mensajeC, sizeof(mensajeC) - sizeof(long), 2);
+        if (msgsnd(idCola, (struct msgbuf *)&mensaje, sizeof(mensaje) - sizeof(long), IPC_NOWAIT) == -1)
+        {
+            perror("    FAIL: No se puede enviar a la cola de mensajes (C)...\n");
+        }
     }
-
+    
     // Finalizamos el proceso C
     return 0;
 }

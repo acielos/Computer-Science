@@ -1,47 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <sys/msg.h>
 
-// Primero crearemos la estructura que usaremos para la cola
-struct Cola
+// Creamos la estructura para la Cola
+struct Mensaje
 {
-    long tipo;
-    int dato;
+    long tipo;      // Nos servirá para identificar de que proceso viene el mensaje
+    int dato;       // El dato que enviará el proceso
 };
 
 int main(){
 
-    // Declaramos las variables para guardar los PID's de los procesos B y C
-    int pidB, pidC;
+    // Declaramos las variables que usaremos
+    int pidB, pidC, idCola, colaVaciaB, colaVaciaC;
 
-    // Declaramos las variables necesarias para:
-    // Guardar el id de la Cola
-    int idCola;
-
-    // Guardar información de las dos colas
-    int colaB, colaC;
-
-    // Declaramos el identificador de la cola
+    // Generamos la variable para la clave de la cola
     key_t clave;
 
-    // Declaramos las colas de los procesos B y C
-    struct Cola mensajeB, mensajeC;
+    // Creamos las variables donde guardaremos los mensajes enviados por la cola
+    struct Mensaje mensajeB, mensajeC;
 
-    // Obtenemos la clave de la cola de mensajes
-    clave = ftok("makefile", 12);
+    // Generamos la clave para la cola; Necesitaremos un archivo existente y un "identificador" (el que queramos)
+    clave = ftok("./makefile", 33);
+
+    // Comprobamos que la generación de la clave se haya hecho de manera correcta
     if (clave == (key_t)-1)
     {
-        perror("Error al obtener la clave de la cola de mensajes\n");
+        perror("FAIL: Error al obtener la clave de la cola de mensajes...\n");
         exit(-1);
     }
 
-    // Abrimos la cola de mensajes
+    // Creamos o abrimos la cola de mensajes
     idCola = msgget(clave, 0600 | IPC_CREAT);
+
+    // Comprobamos que la cola se haya creado / abierto correctamente
     if (idCola == -1)
     {
-        perror("Error al obtener el identificador de la cola de mensajes\n");
+        perror("FAIL: Error al obtener el identificador de la cola de mensajes...\n");
         exit(-1);
     }
 
@@ -50,11 +46,12 @@ int main(){
     if (pidB == 0)
     {
         execl("B", "B", NULL);
-        perror("Error en el EXECL del proceso B\n");
+        perror("FAIL: Error en el EXECL del proceso B...\n");
         exit(-1);
     }else if (pidB == -1)
     {
-        printf("Error en el FORK del proceso B\n");
+        perror("FAIL: Error en el FORK del proceso B...\n");
+        exit(-1);
     }
 
     // Lanzamos el proceso C
@@ -62,49 +59,66 @@ int main(){
     if (pidC == 0)
     {
         execl("C", "C", NULL);
-        perror("Error en el EXECL del proceso C\n");
+        perror("FAIL: Error en el EXECL del proceso C...\n");
         exit(-1);
     }else if (pidC == -1)
     {
-        printf("Error en el FORK del proceso C\n");
+        perror("FAIL: Error en el FORK del proceso C...\n");
+        exit(-1);
     }
 
-    // Mostramos los números de las colas por pantalla
-    for(int i = 0; i < 10; i++)
+    // Leemos de la cola de mensajes
+    int contador = 0;
+    while (contador < 10)
     {
-        // Comprobación del nº de mensajes mostrados por pantalla
-        printf("\nMensaje nº %d\n", i);
-        
-        // Mensajes de la cola del proceso B
-        colaB = msgrcv(idCola, (struct msgbug *)&mensajeB, sizeof(mensajeB) - sizeof(long), 1, 0);
+        // Damos forma...
+        printf("Nº de Generación... %d\n", contador + 1);
+        /*
+        Leemos de la cola de mensajes (B)
+            colaVaciaB: Donde guardaremos los datos leidos de la cola
+            msgrcv(): Función que usamos para recibir de la cola (leemos)
+            idCola: Identificador de la cola donde vamos a leer
+            (struct msbuf *)&mensajeB: Puntero a la estructura donde guardaremos el dato
+            sizeof(mensajeB) - sizeof(long): Quitamos el 'long tipo' de lo que queremos guardar
+            1: Identificamos que viene del proceso B
+            0: La llamada es bloqueante, esperamos hasta que haya algo que leer
+        */
+        colaVaciaB = msgrcv(idCola, (struct msbuf *)&mensajeB, sizeof(mensajeB) - sizeof(long), 1, 0);
 
-        // Comprobamos que no haya errores en la lectura de mensajes 
-        if (colaB == -1)
+        // Comprobamos que no haya errores en la lectura de la cola (B)
+        if (colaVaciaB == -1)
         {
-            perror("No se pueden recibir mensajes de la cola de mensajes\n");
+            perror("FAIL: No se puede recibir de la cola de mensajes (B)...\n");
         }
-        
-        printf("Proceso B: %d\n", mensajeB.dato);
 
-        // Mensajes de la cola del proceso C
-        colaC = msgrcv(idCola, (struct msgbug *)&mensajeC, sizeof(mensajeC) - sizeof(long), 2, 0);
+        // Mostramos por pantalla el dato que hemos leido
+        printf("Número generado por B: %d\n", mensajeB.dato);
 
-        // Comprobamos que no haya errores en la lectura de mensajes 
-        if (colaC == -1)
+        // Al igual que antes... pero cambiamos el identificador de 1 a 2
+        colaVaciaC = msgrcv(idCola, (struct msbuf *)&mensajeC, sizeof(mensajeC) - sizeof(long), 2, 0);
+
+        // Comprobamos que no haya errores en la lectura de la cola (C)
+        if (colaVaciaC == -1)
         {
-            perror("No se pueden recibir mensajes de la cola de mensajes\n");
+            perror("FAIL: No se puede recibir de la cola de mensajes (C)...\n");
         }
-        
-        printf("Proceso C: %d\n", mensajeC.dato);
+
+        // Mostramos por pantalla el dato que hemos leido
+        printf("Número generado por C: %d\n", mensajeC.dato);
+
+        // Damos espacio...
+        printf("\n");
+
+        contador += 1;
     }
 
-    // Eliminamos la cola de mensajes // mostramos mensaje de error
-    if (msgctl(idCola, IPC_RMID, (struct msgid_ds *)NULL) == -1)
+    // Cerramos la cola, si no podemos mostramos un mensaje de error
+    if (msgctl(idCola, IPC_RMID, NULL) == -1)
     {
-        perror("No se puede eliminar la cola de mensajes\n");
+        perror("FAIL: No se puede cerrar la cola de mensajes...\n");
         exit(-1);
     }
     
-    // Finalizamos el proceso A
+    // Terminamos el proceso A
     return 0;
 }
